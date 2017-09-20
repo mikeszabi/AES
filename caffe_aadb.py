@@ -76,9 +76,9 @@ transformer.set_transpose(input_layer, (2,0,1))
 '''
 Making predicitions
 '''
-im_files=imagelist_in_depth(r'e:\Pictures\TestSets\TestSequencies\ImpTest')
+im_files=imagelist_in_depth(r'c:\Users\szmike\Documents\DATA\studio2')
 
-im_file=im_files[9]
+im_file=im_files[1]
 image = cv2.imread(im_file)
 print(im_file)
 img = cv2.imread(im_file, cv2.IMREAD_COLOR)
@@ -93,7 +93,8 @@ cv2.imshow("Output", image)
 cv2.waitKey(0)
 
 #Reading image paths
-test_img_paths = [img_path for img_path in glob.glob(IMAGE_FILE)]
+im_file=glob.glob(IMAGE_FILE)
+test_img_paths = [img_path for img_path in im_file]
 
 #Making predictions
 test_ids = []
