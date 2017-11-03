@@ -68,6 +68,7 @@ class scoring:
         
     def get_scores(self,image_files):      
 
+        im_scores[image]=image_all_scores[i]['AestheticScore']
         for im_file in image_files:
             print(im_file)
             img = cv2.imread(im_file, cv2.IMREAD_COLOR)
