@@ -21,7 +21,20 @@ from caffe.proto import caffe_pb2
 from file_helper import imagelist_in_depth
 
 
+
+#   Image processing helper function
+def transform_img(img, img_width=227, img_height=227):
+#   Image Resizing
+    img = cv2.resize(img, (img_width, img_height), interpolation = cv2.INTER_CUBIC)
+    return img
+
 class scoring:
+
+#Size of images
+    
+    IMAGE_WIDTH = 227
+    IMAGE_HEIGHT = 227
+    
     def __init__(self):
         # AVA
         IMAGE_MEAN= r'.\\model\\mean_AADB_regression_warp256.binaryproto'
@@ -29,8 +42,7 @@ class scoring:
         MODEL_FILE = 'model\initModel.caffemodel'
         caffe.set_mode_cpu()
         #Size of images
-        self.IMAGE_WIDTH = 227
-        self.IMAGE_HEIGHT = 227
+
 
 # Reading mean image, caffe model and its weights
 
@@ -41,7 +53,7 @@ class scoring:
         mean_array=np.asarray(mean_blob.data, dtype=np.float32).reshape((mean_blob.height, mean_blob.width, mean_blob.channels))
         #cv2.imshow("Output", mean_array)
         #cv2.waitKey(0)    
-        mean_array = self.transform_img(mean_array)
+        mean_array = transform_img(mean_array,self.IMAGE_WIDTH, self.IMAGE_HEIGHT)
 
         mean_array = mean_array.reshape((mean_blob.channels, self.IMAGE_WIDTH, self.IMAGE_HEIGHT))
         #Read model architecture and trained model's weights
@@ -58,28 +70,21 @@ class scoring:
         self.transformer = caffe.io.Transformer({self.input_layer: self.net.blobs[self.input_layer].data.shape})
         self.transformer.set_mean(self.input_layer, mean_array)
         self.transformer.set_transpose(self.input_layer, (2,0,1))
-
-#   Image processing helper function
-    def transform_img(self,img, img_width=self.IMAGE_WIDTH, img_height=self.IMAGE_HEIGHT):
-#   Image Resizing
-        img = cv2.resize(img, (img_width, img_height), interpolation = cv2.INTER_CUBIC)
-        return img
         
         
     def get_scores(self,image_files):      
 
-        im_scores[image]=image_all_scores[i]['AestheticScore']
-        for im_file in image_files:
+        im_all_scores=[None] * len(image_files)
+        for i, im_file in enumerate(image_files):
             print(im_file)
             img = cv2.imread(im_file, cv2.IMREAD_COLOR)
-            img = self.transform_img(img)
+            img = transform_img(img, self.IMAGE_WIDTH, self.IMAGE_HEIGHT)
             
             self.net.blobs[self.input_layer].data[...] = self.transformer.preprocess(self.input_layer, img)
             out = self.net.forward()
             
-            aes_score = out['fc11_score'][0][0]
-            print(out)
+            im_all_scores[i] = {'AestheticScore':str(out['fc11_score'][0][0])}
         
-        return aes_score
+        return im_all_scores
         
 

@@ -16,6 +16,7 @@ from PIL.ImageTk import PhotoImage                # PIL photo widget replacement
 import image_views  
 import file_helper
 import aes_Picturio
+import aes_AADB
 import json
 
 
@@ -32,7 +33,8 @@ class image_set:
         self.image_list=[]
         self.image_scores={}
         self.is_Scores_ready=False
-        self.scoring=aes_Picturio.scoring()
+        #self.scoring=aes_Picturio.scoring()
+        self.scoring=aes_AADB.scoring()
  
     def new_list(self,image_dir):
         self.current_dir=image_dir
@@ -57,6 +59,7 @@ class image_set:
                 im_scores={}
                 for i,image in enumerate(self.image_list):
                    im_scores[image]=image_all_scores[i]['AestheticScore']
+# save im_scores
                 with open(image_score_file, 'w') as fp:
                     json.dump(im_scores,fp)
             self.image_scores=OrderedDict(sorted(im_scores.items(), key=lambda t: t[1], reverse=True))
