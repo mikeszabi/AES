@@ -75,15 +75,19 @@ class scoring:
     def get_scores(self,image_files):      
 
         im_all_scores=[None] * len(image_files)
-        for i, im_file in enumerate(image_files):
-            print(im_file)
-            img = cv2.imread(im_file, cv2.IMREAD_COLOR)
-            img = transform_img(img, self.IMAGE_WIDTH, self.IMAGE_HEIGHT)
+        for i, fname in enumerate(image_files):
+            img = cv2.imread(fname, cv2.IMREAD_COLOR)
+            if (type(img) is np.ndarray):
+                print(fname)
+                img = transform_img(img, self.IMAGE_WIDTH, self.IMAGE_HEIGHT)
             
-            self.net.blobs[self.input_layer].data[...] = self.transformer.preprocess(self.input_layer, img)
-            out = self.net.forward()
+                self.net.blobs[self.input_layer].data[...] = self.transformer.preprocess(self.input_layer, img)
+                out = self.net.forward()
             
-            im_all_scores[i] = {'AestheticScore':str(out['fc11_score'][0][0])}
+                im_all_scores[i] = {'AestheticScore':str(out['fc11_score'][0][0])}
+            else:
+                print(fname+' does not exists')
+                im_all_scores[i] = {'AestheticScore':str(None)}
         
         return im_all_scores
         

@@ -74,10 +74,28 @@ class gui(tk.Frame):
         tk.Frame.__init__(self, master, background="green")
         tk.Button(self, text='Open Image Directory', command=self.onDirectoryOpen).pack( )
         tk.Button(self, text='Get Scores', command=self.onScoring).pack( )
-    
+        tk.Button(self, text='View', command=self.onView).pack( )
+       
         self.granularity_scale=tk.Scale(self,from_=1, to=50, orient=tk.HORIZONTAL)
         self.granularity_scale.pack()
         self.granularity_scale.set(10)
+        
+        self.lstbox = tk.Listbox(self, selectmode=tk.SINGLE)
+        self.lstbox.insert(1,'AADB')
+        self.lstbox.insert(2,'Picturio')
+        self.lstbox.pack(side=tk.LEFT,fill=tk.Y, expand=1)
+        self.lstbox.bind('<<ListboxSelect>>', self.onSelect)
+    
+    def onSelect(self,evt):
+        """
+        creating features
+        """
+        w=evt.widget
+        index=int(w.curselection()[0])
+        if index==0:
+            self.scoring=aes_AADB.scoring()
+        else:
+            self.scoring=aes_Picturio.scoring()
         
     def onDirectoryOpen(self):
         """
@@ -97,6 +115,11 @@ class gui(tk.Frame):
         creating features
         """
         self.imset.create_image_score()
+        
+    def onView(self):
+        """
+        creating thumbnail view
+        """
         if self.imset.image_scores:
             set_id='thumbs'
             image_views.viewThumbs(self.imset.image_scores, set_id, kind=tk.Toplevel)

@@ -31,6 +31,7 @@ class scoring:
                 'password':pswd}
         
         response = requests.post(url, data=data)
+        print(response)
         
         self.out_token=response.json()
         
@@ -58,15 +59,18 @@ class scoring:
         headers['accept']='application/json'
 
         files={}
-        for images in image_files:
-            fname=os.path.basename(images)
-            files={}
-            files[fname]=(fname,open(images, 'rb'),mimetypes.guess_type(image_files[0])[0])
+        for image_files in image_files:
+            if os.path.exists(image_files):
+                fname=os.path.basename(image_files)
+                files={}
+                files[fname]=(fname,open(image_files, 'rb'),mimetypes.guess_type(image_files)[0])
         #files[fname]=(fname,open(images, 'rb'),mimetypes.guess_type(image_files[0])[0])
             
         #files={'file':('10022.jpg',open(image_files[0], 'rb'),mimetypes.guess_type(image_files[0])[0])}
-            response = requests.post(url, headers=headers, files=files)
-            print(response)
+                response = requests.post(url, headers=headers, files=files)
+                print(response)
+            else:
+                print(fname+' does not exists')
         #
 
 
