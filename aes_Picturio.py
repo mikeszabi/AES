@@ -59,7 +59,7 @@ class scoring:
         headers['accept']='application/json'
 
         files={}
-        for image_files in image_files:
+        for i, image_files in enumerate(image_files):
             if os.path.exists(image_files):
                 fname=os.path.basename(image_files)
                 files={}
@@ -68,6 +68,7 @@ class scoring:
             
         #files={'file':('10022.jpg',open(image_files[0], 'rb'),mimetypes.guess_type(image_files[0])[0])}
                 response = requests.post(url, headers=headers, files=files)
+                print(str(i)+' : ')
                 print(response)
             else:
                 print(fname+' does not exists')

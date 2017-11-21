@@ -83,6 +83,8 @@ class scoring:
             
                 self.net.blobs[self.input_layer].data[...] = self.transformer.preprocess(self.input_layer, img)
                 out = self.net.forward()
+                
+                print(str(i))
             
                 im_all_scores[i] = {'AestheticScore':str(out['fc11_score'][0][0])}
             else:
