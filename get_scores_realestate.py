@@ -8,11 +8,12 @@ import matplotlib.pyplot as plt
 import skimage.io as io
 import file_helper as fh
 import os
+import numpy as np
 import json
 import pandas as pd
+
 import aes_Picturio
 import aes_AADB
-import numpy as np
 
 base_dir=os.path.join('e:','OneDrive','AES','Photo_DB')
 image_dir=os.path.join(base_dir,'RealEstate')
@@ -70,7 +71,6 @@ Save scores
 
 
 df_scores.to_csv(score_file_merged,index=None)
-df_scores=pd.read_csv(score_file_merged,delimiter=',')
 
 
 """
