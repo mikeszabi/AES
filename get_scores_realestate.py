@@ -12,6 +12,8 @@ import numpy as np
 import json
 import pandas as pd
 
+from sklearn import cluster
+
 import aes_Picturio
 import aes_AADB
 
@@ -81,6 +83,11 @@ df_scores=pd.read_csv(score_file_merged,delimiter=',')
 
 h=df_scores.groupby('Class name').hist()
 
+
+scores=df_scores['AADB'].values
+sep_value=0.5
+
+
 #
 #df_scores.corr(method='pearson')
 #
@@ -92,13 +99,19 @@ h=df_scores.groupby('Class name').hist()
 
 df_scores.hist()
 
-df_top=df_scores[(df_scores['AADB']>0.75*df_scores['AADB'].max())]
+df_top=df_scores[(df_scores['AADB']>0.8*df_scores['AADB'].max())]
+df_top=df_scores[df_scores['AADB']<=0.4]
 
-for i, row in df_scores.iterrows():    
+df_top.groupby('Class name').count()
+for i, row in df_top.iterrows():    
     print(row['Filename'])
     img=io.imread(row['Filename'])
     fig, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(8, 3))
     fig.suptitle('AADB:'+str(row['AADB'])+'     Picturio:'+str(row['Picturio'])+'      CAT:'+row['Class name'])
     ax1.imshow(img)
-    fig.savefig(os.path.join(save_dir,row['Class name']+'_'+os.path.basename(row['Filename'])))
+    ax1.grid(False)
+
+    fig.savefig(os.path.join(save_dir,'bottom',row['Class name']+'_'+os.path.basename(row['Filename'])))
     plt.close('all')
+    
+    
