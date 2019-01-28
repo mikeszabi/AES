@@ -15,8 +15,8 @@ from PIL.ImageTk import PhotoImage                # PIL photo widget replacement
 
 import image_views  
 import file_helper
-import aes_Picturio
-import aes_AADB
+#import aes_Picturio
+import aes_AADB_opencv
 import json
 
 
@@ -34,7 +34,7 @@ class image_set:
         self.image_scores={}
         self.is_Scores_ready=False
         #self.scoring=aes_Picturio.scoring()
-        self.scoring=aes_AADB.scoring()
+        self.scoring=aes_AADB_opencv.scoring()
  
     def new_list(self,image_dir):
         self.current_dir=image_dir
@@ -93,9 +93,9 @@ class gui(tk.Frame):
         w=evt.widget
         index=int(w.curselection()[0])
         if index==0:
-            self.scoring=aes_AADB.scoring()
-        else:
-            self.scoring=aes_Picturio.scoring()
+            self.scoring=aes_AADB_opencv.scoring()
+#        else:
+#            self.scoring=aes_Picturio.scoring()
         
     def onDirectoryOpen(self):
         """
