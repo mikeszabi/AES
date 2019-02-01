@@ -12,13 +12,15 @@ import os
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 
+IMAGE_DIR=r'c:\Users\PocUser\Documents\DATA\AES\top'
+
 def block_view(array, block= (3, 3)):
     """Provide a 2D block view to 2D array. No error checking made.
     Therefore meaningful (as implemented) only for blocks strictly
     compatible with the shape of A."""
     # simple shape and strides computations may seem at first strange
     # unless one is able to recognize the 'tuple additions' involved ;-)
-    shape= (array.shape[0]/ block[0], array.shape[1]/ block[1])+ block
+    shape= (int(array.shape[0]/ block[0]), int(array.shape[1]/ block[1]))+ block
     strides= (block[0]* array.strides[0], block[1]* array.strides[1])+ array.strides
     return ast(array, shape= shape, strides= strides)
 
@@ -52,8 +54,8 @@ def haarImage(img,nLevel=3):
     
 def calcHaarEmap_oneLevel(haar1):
     # 3D, max among channels
-    half_height = haar1.shape[0]/2;
-    half_width  = haar1.shape[1]/2;
+    half_height = int(haar1.shape[0]/2);
+    half_width  = int(haar1.shape[1]/2);
 
     imax=np.empty((half_height,half_width,3), dtype='float32') 
 
@@ -66,16 +68,16 @@ def calcHaarEmap_oneLevel(haar1):
 
 def calcHaarEmap(haar,nLevel=3):
     (h, w, c) = haar.shape
-    sh = h/(pow(2,nLevel))
-    sw = w/(pow(2,nLevel))
+    sh = int(h/(pow(2,nLevel)))
+    sw = int(w/(pow(2,nLevel)))
     eMaps=np.empty((sh,sw,nLevel), dtype='float32')    
 
     for iLevel in range(0,nLevel):
-         sh = h/pow(2,iLevel)
-         sw = w/pow(2,iLevel)
+         sh = int(h/pow(2,iLevel))
+         sw = int(w/pow(2,iLevel))
          tmp=calcHaarEmap_oneLevel(haar[0:sh,0:sw,:])
          eMaps[:,:,nLevel-iLevel-1]=block_view(tmp,
-                                    block=(pow(2,(nLevel-iLevel-1)),pow(2,(nLevel-iLevel-1)))).max(2).max(2)
+                                    block=(int(pow(2,(nLevel-iLevel-1))),int(pow(2,(nLevel-iLevel-1))))).max(2).max(2)
     
     return eMaps
 
@@ -142,8 +144,7 @@ def main(photo_file):
     if isGray:
         img_gray = cv2.cvtColor(img_orig.astype(dtype=np.uint8), cv2.COLOR_BGR2GRAY)
 
-        img=np.empty(img_gray.shape+(1L,), dtype='uint8') 
-        img[:,:,0]=img_gray
+        img=np.stack((img_gray,)*3, axis=-1)
     else:
         img=img_orig
         
@@ -168,7 +169,7 @@ def main(photo_file):
     fMask=doMorphology(focusMask[:,:,2])
 
     cv2.imshow('fMask',255*focusMask[:,:,0]) #.astype(dtype=np.uint8))
-    cv2.waitKey()
+    cv2.waitKey(1)
     
     img_tmp=np.empty(focusMask.shape, dtype='uint8')   
     img_tmp.fill(0)
@@ -178,8 +179,8 @@ def main(photo_file):
     img_foc = cv2.addWeighted(img_bb3,0.5,cv2.resize(img_tmp,(img_bb.shape[1],img_bb.shape[0])),0.5,0)    
         
     (h, w, c) = haar.shape
-    sh = h/(pow(2,nLevel))
-    sw = w/(pow(2,nLevel))
+    sh = int(h/(pow(2,nLevel)))
+    sw = int(w/(pow(2,nLevel)))
     img_small=haar[0:sh,0:sw,:]
     
     dominantColor(img_small)
@@ -187,17 +188,17 @@ def main(photo_file):
     img_uo=underOver(img_bb3.astype(dtype=np.uint8))
 
     cv2.imshow('fmap',cv2.resize(img_foc,(600,int((600/float(img_foc.shape[1])*img_foc.shape[0]))))) #.astype(dtype=np.uint8))
-    cv2.waitKey()
+    cv2.waitKey(1)
     cv2.imshow('underover',cv2.resize(img_uo,(600,int((600/float(img_uo.shape[1])*img_uo.shape[0]))))) #.astype(dtype=np.uint8))
-    cv2.waitKey()
+    cv2.waitKey(1)
     
-    cv2.imwrite('e:\\Pictures\\TempC\\'+'foc_'+os.path.split(photo_file)[1],img_foc)
-    cv2.imwrite('e:\\Pictures\\TempC\\'+'uo_'+os.path.split(photo_file)[1],img_uo)
+    cv2.imwrite(r'c:\Users\PocUser\Documents\DATA\TEMP'+'foc_'+os.path.split(photo_file)[1],img_foc)
+    cv2.imwrite(r'c:\Users\PocUser\Documents\DATA\TEMP'+'uo_'+os.path.split(photo_file)[1],img_uo)
 
 if __name__ == '__main__':
     msg = 'Do you want to continue?'
     title = 'Please Confirm'
-    photo_file=r'e:\Pictures\TestSets\Temp4\TUN_9789.jpg'
+    photo_file=os.path.join(IMAGE_DIR,'nice_30.jpg')
     #main(photo_file)
     while easygui.ccbox(msg, title):     # show a Continue/Cancel dialog
         photo_file = easygui.fileopenbox(default=photo_file)
